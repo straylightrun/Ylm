@@ -1,0 +1,122 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <script src="math.js" type="text/javascript"></script>
+  <script src="numeric-1.2.6.min.js" type="text/javascript"></script>
+  <script src="ylm.js" type="text/javascript"></script>
+  <script type="text/javascript" src="three.min.js"></script>
+  <script type="text/javascript" src="d3.min.js"></script>
+  <script type="text/javascript" src="jquery-2.2.2.min.js"></script>
+  <script type="text/javascript" src="plotly.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+
+
+  <script type="text/javascript">
+	$(document).ready(function() {
+
+		$('#draw').click( function() {
+			drawOrbitals( parseInt($('#n').val()), parseInt($('#l').val()), parseInt($('#m').val()), parseInt($('#samples').val()) );
+    	});
+
+		$('#n').change(function() {
+    		if( $(this).val() < 0 || !$.isNumeric($(this).val()) ) {
+    			$(this).val(0);
+			}
+		});
+
+		$('#l').change(function() {
+    		if( $(this).val() < 0 || !$.isNumeric($(this).val()) ) {
+    			$(this).val(0);
+			}
+
+			if( $(this).val() > parseInt($('#n').val()) - 1) {
+    			$(this).val(parseInt($('#n').val()) - 1);
+			}
+		});
+
+		$('#m').change(function() {
+    		if( !$.isNumeric($(this).val()) ) {
+    			$(this).val(0);
+			}
+
+			if( $(this).val() > parseInt($('#l').val()) ) {
+    			$(this).val(parseInt($('#l').val()));
+			}
+
+			if( $(this).val() < -1*parseInt($('#l').val()) ) {
+    			$(this).val(-1*parseInt($('#l').val()));
+			}
+		});
+
+	});
+
+ 	function drawOrbitals(n, l, m, samples) {
+		    var x,y,z,data,pt;
+		    var x_pts = [];
+		    var y_pts = [];
+		    var z_pts = [];
+		    var n_points = samples; // Number of pts we want
+
+		    // Use Metropolis Hastings instead
+		    pts = MHSamplePsi2(n, l, m, n_points + 1000, 1000, 10);
+		    // Convert each point to Cartesian
+		    for(var i = 0; i < pts.length; i++) {
+		    	x_pts.push(pts[i][0]);
+		    	y_pts.push(pts[i][1]);
+		    	z_pts.push(pts[i][2]);
+
+		    }
+			
+			var plotPts = {
+				x: x_pts,
+				y: y_pts,
+				z: z_pts,
+				mode: 'markers',
+				marker: {
+				    size: 2,
+				    color: 'rgba(51, 153, 255, 0.8)',
+				    opacity: 0.8
+				},
+				type: 'scatter3d',
+				hoverinfo: 'none'
+			};
+
+		    var layout = {	
+		    				paper_bgcolor: '#000',
+		    				margin: {
+							    l: 0,
+							    r: 0,
+							    b: 0,
+							    t: 0
+						  }};
+
+ 			Plotly.newPlot('vis', [plotPts], layout);
+ 	};
+  </script>
+
+</head>
+<body>
+		<div id="wrapper">
+			<div id="vis" style="width: 600px; height: 600px; margin: 0 auto; "></div>
+
+			<div id="title" style="float:left;">
+				<h1>Ylm</h1>
+			</div>
+
+			<div id="menu">
+				<h2>Set Quantum numbers</h2>
+					<p>
+						n: <input type="text" id="n" size="4" value=1>
+						l: <input type="text" id="l" size="4" value=0>
+						m: <input type="text" id="m" size="4" value=0>
+					</p>
+					<p>
+						Samples: <input type="text" id="samples" size="6" value=500000>
+					</p>
+					<p>
+						<button type="button" id='draw'>Draw</button>
+					</p>
+			</div>
+		</div>
+</body>
+</html>
