@@ -1,13 +1,13 @@
 // http://www.physics.drexel.edu/~tim/open/hydrofin/hyd.pdf
 
 // Bohr Radius
-var a = 1; 
+var a = 1;
 // Boundaries for sampling (as multiples of Bohr Radius)
 var XMAX = 20*a; // +/- this value
 var YMAX = 20*a;
 var ZMAX = 20*a;
 // Max number of samples for rejection sampling of wave function
-var SAMPLEMAX = 20000; 
+var SAMPLEMAX = 20000;
 // Max Psi2 value (for rejection sampling)
 var M = 0.5;
 // Constants for speeding up calculations
@@ -31,10 +31,10 @@ function L(l, n, r) {
 
 function R(n, l, r) {
 	// Radial Equation
-	return math.sqrt(math.factorial(n - l - 1) / 
-                        (2*n*(math.factorial(n+l))) * 
-                        math.pow(2/(n*a), 3)) * 
-                        math.exp(-r/(n*a)) * 
+	return math.sqrt(math.factorial(n - l - 1) /
+                        (2*n*(math.factorial(n+l))) *
+                        math.pow(2/(n*a), 3)) *
+                        math.exp(-r/(n*a)) *
                         math.pow(((2*r)/(n*a)), l) *
                         L(2*l + 1, n - l - 1, (2*r)/(n*a) );
 }
@@ -50,7 +50,7 @@ function Plm(l, m, x) {
         console.log("Plm: Invalid values");
         return null;
     }
-    
+
     var pmm = 1.0;
     var fact, pmmp1, pll, somx2, i, ll;
 
@@ -88,11 +88,11 @@ function Ylm(l, m, theta, phi) {
 	// Real Spherical Harmonics
 
     if(m < 0) {
-        return Math.sqrt( ((2*l + 1) * math.factorial(l - math.abs(m)) ) /(PI4*math.factorial(l + math.abs(m))) ) * Plm(l, math.abs(m), math.cos(theta)) * math.sin(math.abs(m) * phi) * SQRT2;  
+        return Math.sqrt( ((2*l + 1) * math.factorial(l - math.abs(m)) ) /(PI4*math.factorial(l + math.abs(m))) ) * Plm(l, math.abs(m), math.cos(theta)) * math.sin(math.abs(m) * phi) * SQRT2;
     } else if(m == 0) {
         return Math.sqrt((2*l + 1)/(PI4) ) * Plm(l, 0, math.cos(theta));
     } else {
-        return Math.sqrt( ((2*l + 1) * math.factorial(l - math.abs(m)) ) /(PI4*math.factorial(l + math.abs(m))) ) * Plm(l, m, math.cos(theta)) * math.sin(m * phi) * SQRT2;  
+        return Math.sqrt( ((2*l + 1) * math.factorial(l - math.abs(m)) ) /(PI4*math.factorial(l + math.abs(m))) ) * Plm(l, m, math.cos(theta)) * math.sin(m * phi) * SQRT2;
     }
 }
 
@@ -628,10 +628,10 @@ function NormalZigg() {
         var retVal = null;
         var neg = Math.random() > 0.5 ? -1 : 1;
 
-        for(var tries = 0; tries < 1000; tries++) {    
+        for(var tries = 0; tries < 1000; tries++) {
              // Randomly select a segment
-             var i = Math.floor(Math.random()*255);
-            
+             var i = Math.floor(Math.random()*256);
+
              if(i == 0) {  // Segment0 is special
                 var w = Math.random() * area;
 
@@ -658,12 +658,12 @@ function NormalZigg() {
                     retVal = pt;
                     break;
                 } else {
-                    var ypt = Math.random() * (y[i+1] - y[i]) + y[i]; 
+                    var ypt = Math.random() * (y[i+1] - y[i]) + y[i];
 
                     if(ypt < Math.exp(-(pt*pt)/2.)) {
                         retVal = pt;
                         break;
-                    } 
+                    }
                 }
              }
         }
@@ -778,14 +778,14 @@ function rejectionSamplePsi2(n,l,m) {
     /* Draw a random sample from the probability distribution given
         1. Picks a random point x from uniform dist, calculates PDF there
         2. Picks another random pt y from [0,1], if y*M > PDF(x), repeat from 1, else return x
-        
+
         - n,l,m - quantum numbers for orbital
     */
     var x, y, z, r, theta, phi, p, u;
     var samples = 0;
 
     do {
-        // First generate random point 
+        // First generate random point
 
         // Uniform sampling using cartesian
         /*
@@ -798,7 +798,7 @@ function rejectionSamplePsi2(n,l,m) {
         theta = math.acos(z/r);
         phi = math.atan(y/x);
         */
-        
+
         // Try generating random point in SP space (might suffer from artifacts at great R)
         r = math.random() * RMAX;
         theta = math.random() * PI;
@@ -809,12 +809,12 @@ function rejectionSamplePsi2(n,l,m) {
 
         //console.log("p: " + p + " x:" + x + " y:" + y + " z:" + z + " r: " + r + " theta: " + theta + " phi: " + phi);
 
-        
+
         if(p > 1 || isNaN(p)) {
             console.log("Psi2 has returned an invalid value");
             return null;
         }
-        
+
 
         u = math.random() * M; // Uniform sample from [0,M] (M represents an upper bound on the PDF)
 
@@ -830,14 +830,7 @@ function rejectionSamplePsi2(n,l,m) {
     // Convert point to Cartesian
     x = r * math.sin(theta) * math.cos(phi);
     y = r * math.sin(theta) * math.sin(phi);
-    z = r * math.cos(theta); 
+    z = r * math.cos(theta);
 
     return [x,y,z];
 }
-
-
-
-
-
-
-
